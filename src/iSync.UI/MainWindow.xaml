@@ -1,0 +1,143 @@
+﻿<Window x:Class="iSync.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:iSync.UI.ViewModels"
+        xmlns:helpers="clr-namespace:iSync.UI.Helpers"
+        mc:Ignorable="d"
+        Icon="Resources/camera.png"
+        Title="Photo Sync That Just Works"
+        Height="450" Width="800"
+        d:DataContext="{d:DesignInstance vm:MainViewModel}">
+
+  <Grid>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="34" />
+      <RowDefinition Height="54" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- Device list -->
+    <Grid Background="#f8f8f8">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="96" />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <Grid.Resources>
+
+      </Grid.Resources>
+
+      <TextBlock Text="Source:"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Center"
+                 Margin="10,5,12,5" />
+
+      <Grid Grid.Column="1" Height="24" Margin="0, 5, 10, 5">
+        <ComboBox HorizontalAlignment="Stretch"
+                  VerticalAlignment="Center"
+                  VerticalContentAlignment="Center"
+                  ItemsSource="{Binding Devices, Mode=OneTime}"
+                  SelectedItem="{Binding CurrentDevice, Mode=TwoWay}"
+                  ToolTip="{Binding CurrentDevice.Tip, Mode=OneWay}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Image.Result, Mode=OneWay}"
+                       Width="16" Height="16" Margin="0,0,4,0" />
+                <TextBlock Text="{Binding DisplayName, Mode=OneTime}" />
+              </StackPanel>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+          <ComboBox.ItemContainerStyle>
+            <Style TargetType="ComboBoxItem">
+              <Setter Property="ToolTip" Value="AAA" />
+            </Style>
+          </ComboBox.ItemContainerStyle>
+        </ComboBox>
+        <!-- no device selected hint -->
+        <TextBlock
+          Foreground="Gray"
+          IsHitTestVisible="False"
+          HorizontalAlignment="Left"
+          VerticalAlignment="Center"
+          Margin="5,0,0,0"
+          Text="{Binding Path=DevicesCountMessage, Mode=OneWay}">
+          <TextBlock.Visibility>
+            <Binding Path="CurrentDevice" Mode="OneWay">
+              <Binding.Converter>
+                <helpers:NullToVisibilityConverter />
+              </Binding.Converter>
+            </Binding>
+          </TextBlock.Visibility>
+        </TextBlock>
+      </Grid>
+
+    </Grid>
+
+    <!-- folder chooser -->
+    <Grid Grid.Row="1" Background="#f0f0f0" DataContext="{Binding FolderChooser, Mode=OneTime}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="34" />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="96" />
+        <ColumnDefinition />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Text="Destination:" HorizontalAlignment="Left"
+                 VerticalAlignment="Center"
+                 Margin="10,5,12,5" />
+
+      <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True"
+               Height="24" Margin="0, 5, 10, 5"
+               Text="{Binding FolderPath, Mode=TwoWay}"
+               HorizontalContentAlignment="Left"
+               VerticalContentAlignment="Center"
+               GotFocus="FolderPathGotFocus"
+               MouseLeftButtonUp="FolderPathMouseUp"/>
+
+      <Button Grid.Row="0" Grid.Column="2" Content="_Browse…"
+              Height="24"
+              Padding="10, 0, 10, 0" Margin="0,5,10,5"
+              Command="{Binding BrowseCommand, Mode=OneTime}"/>
+
+      <TextBlock Grid.Row="1" Grid.Column="1" Margin="0" Padding="0"
+                 Text="{Binding FolderHint, Mode=OneWay}"
+                 VerticalAlignment="Top" Foreground="Gray"
+                 />
+
+    </Grid>
+
+    <!-- Photos list -->
+    <Grid Grid.Row="2" DataContext="{Binding CurrentDevice, Mode=OneWay}">
+
+      
+        
+        <ListView ItemsSource="{Binding Contents.Result}" Margin="4">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="5" />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+          <ListBox.ItemTemplate>
+            <DataTemplate DataType="vm:ImportItemViewModel">
+              <Grid Height="50" MaxHeight="50">
+                <!--<Image Source="{Binding Thumbnail.Result, Mode=OneWay}" />-->
+                <TextBlock Text="{Binding Name, Mode=OneTime}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListView>
+      
+
+      <!-- <DataGrid> -->
+      <!-- -->
+      <!-- </DataGrid> -->
+    </Grid>
+
+  </Grid>
+</Window>
