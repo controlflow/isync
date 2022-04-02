@@ -6,20 +6,20 @@ namespace iSync.UI.ViewModels;
 
 public sealed class ImportItemViewModel : ObservableObject
 {
-  private readonly PhotoImportItem _importItem;
-
   public ImportItemViewModel(PhotoImportItem importItem)
   {
-    _importItem = importItem;
+    ImportItem = importItem;
   }
 
-  public string Name => _importItem.Path;
+  public PhotoImportItem ImportItem { get; }
+
+  public string Name => ImportItem.Path;
 
   public NotifyTaskCompletion<object> Thumbnail => new(LoadThumbnail());
 
   private async Task<object> LoadThumbnail()
   {
-    using var streamWithContentType = await _importItem.Thumbnail.OpenReadAsync();
+    using var streamWithContentType = await ImportItem.Thumbnail.OpenReadAsync();
 
     await using var stream = streamWithContentType.AsStreamForRead();
     await using var bufferStream = new MemoryStream();

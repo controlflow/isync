@@ -19,28 +19,28 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <!-- Device list -->
-    <Grid Background="#f8f8f8">
+    <!-- Source -->
+    <Grid Background="#f8f8f8"
+          DataContext="{Binding SourceList, Mode=OneTime}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="96" />
         <ColumnDefinition />
       </Grid.ColumnDefinitions>
-      <Grid.Resources>
-
-      </Grid.Resources>
 
       <TextBlock Text="Source:"
                  HorizontalAlignment="Left"
                  VerticalAlignment="Center"
                  Margin="10,5,12,5" />
 
-      <Grid Grid.Column="1" Height="24" Margin="0, 5, 10, 5">
+      <Grid Grid.Column="1"
+            Margin="0,5,10,5"
+            Height="24">
         <ComboBox HorizontalAlignment="Stretch"
                   VerticalAlignment="Center"
                   VerticalContentAlignment="Center"
                   ItemsSource="{Binding Devices, Mode=OneTime}"
-                  SelectedItem="{Binding CurrentDevice, Mode=TwoWay}"
-                  ToolTip="{Binding CurrentDevice.Tip, Mode=OneWay}">
+                  SelectedItem="{Binding CurrentDevice.Value, Mode=TwoWay}"
+                  ToolTip="{Binding CurrentDevice.Value.Tip, Mode=OneWay}">
           <ComboBox.ItemTemplate>
             <DataTemplate>
               <StackPanel Orientation="Horizontal">
@@ -65,7 +65,7 @@
           Margin="5,0,0,0"
           Text="{Binding Path=DevicesCountMessage, Mode=OneWay}">
           <TextBlock.Visibility>
-            <Binding Path="CurrentDevice" Mode="OneWay">
+            <Binding Path="CurrentDevice.Value" Mode="OneWay">
               <Binding.Converter>
                 <helpers:NullToVisibilityConverter />
               </Binding.Converter>
@@ -76,8 +76,10 @@
 
     </Grid>
 
-    <!-- folder chooser -->
-    <Grid Grid.Row="1" Background="#f0f0f0" DataContext="{Binding FolderChooser, Mode=OneTime}">
+    <!-- Destination -->
+    <Grid Grid.Row="1"
+          Background="#f0f0f0"
+          DataContext="{Binding FolderChooser, Mode=OneTime}">
       <Grid.RowDefinitions>
         <RowDefinition Height="34" />
         <RowDefinition />
@@ -88,55 +90,82 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <TextBlock Text="Destination:" HorizontalAlignment="Left"
-                 VerticalAlignment="Center"
-                 Margin="10,5,12,5" />
+      <TextBlock Text="Destination:"
+                 Margin="10,5,12,5"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Center" />
 
-      <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True"
-               Height="24" Margin="0, 5, 10, 5"
+      <TextBox Grid.Row="0" Grid.Column="1"
+               IsReadOnly="True"
+               Margin="0,5,10,5"
+               Height="24"
                Text="{Binding FolderPath, Mode=TwoWay}"
                HorizontalContentAlignment="Left"
                VerticalContentAlignment="Center"
                GotFocus="FolderPathGotFocus"
-               MouseLeftButtonUp="FolderPathMouseUp"/>
+               PreviewMouseLeftButtonDown="FolderPathMouseUp"/>
 
-      <Button Grid.Row="0" Grid.Column="2" Content="_Browse…"
+      <Button Grid.Row="0" Grid.Column="2"
+              Content="_Browse…"
+              Padding="10,0,10,0"
+              Margin="0,5,10,5"
               Height="24"
-              Padding="10, 0, 10, 0" Margin="0,5,10,5"
               Command="{Binding BrowseCommand, Mode=OneTime}"/>
 
-      <TextBlock Grid.Row="1" Grid.Column="1" Margin="0" Padding="0"
+      <TextBlock Grid.Row="1" Grid.Column="1"
                  Text="{Binding FolderHint, Mode=OneWay}"
-                 VerticalAlignment="Top" Foreground="Gray"
-                 />
-
+                 VerticalAlignment="Top"
+                 Foreground="Gray" />
     </Grid>
 
     <!-- Photos list -->
-    <Grid Grid.Row="2" DataContext="{Binding CurrentDevice, Mode=OneWay}">
+    <Grid Grid.Row="2"
+          DataContext="{Binding ImportSession, Mode=OneWay}">
 
-      
-        
-        <ListView ItemsSource="{Binding Contents.Result}" Margin="4">
-          <ListBox.ItemsPanel>
-            <ItemsPanelTemplate>
-              <UniformGrid Columns="5" />
-            </ItemsPanelTemplate>
-          </ListBox.ItemsPanel>
-          <ListBox.ItemTemplate>
-            <DataTemplate DataType="vm:ImportItemViewModel">
-              <Grid Height="50" MaxHeight="50">
-                <!--<Image Source="{Binding Thumbnail.Result, Mode=OneWay}" />-->
-                <TextBlock Text="{Binding Name, Mode=OneTime}" />
-              </Grid>
+      <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding Contents.Result}"
+                      Focusable="False"
+                      AlternationCount="2">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:ImportGroupViewModel">
+              <Border Height="100" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+                <Border.Style>
+                  <Style TargetType="Border">
+                    <Style.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background"
+                                Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+                      </Trigger>
+                    </Style.Triggers>
+                  </Style>
+                </Border.Style>
+                <StackPanel>
+                  <TextBlock Text="{Binding GroupName}" />
+                  <TextBlock Text="{Binding Size}" />
+                  <TextBlock Text="{Binding Count}" />
+                </StackPanel>
+              </Border>
             </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListView>
-      
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
 
-      <!-- <DataGrid> -->
-      <!-- -->
-      <!-- </DataGrid> -->
+      <!--<ListView ItemsSource="{Binding Contents}"
+                Margin="4">
+        ~1~<ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Columns="5" />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>@1@
+        ~1~<ListBox.ItemTemplate>
+          <DataTemplate DataType="vm:ImportItemViewModel">
+            <Grid Height="50" MaxHeight="50">
+              ~2~<Image Source="{Binding Thumbnail.Result, Mode=OneWay}" />@2@
+              <TextBlock Text="{Binding Name, Mode=OneTime}" />
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>@1@
+      </ListView>-->
     </Grid>
 
   </Grid>

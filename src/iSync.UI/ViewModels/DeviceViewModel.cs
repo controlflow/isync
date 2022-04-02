@@ -65,30 +65,7 @@ public class DeviceViewModel : ObservableObject, IEquatable<DeviceViewModel>
     }
   }
 
-  public NotifyTaskCompletion<object> Contents => new(LoadContents())
-  {
-    NotCompletedValue = "Loading...",
-    FailedValue = "Failed"
-  };
-
-  private async Task<object> LoadContents()
-  {
-    using var importSession = _photoImportSource.CreateImportSession();
-
-    importSession.SubfolderCreationMode = PhotoImportSubfolderCreationMode.KeepOriginalFolderStructure;
-    importSession.DestinationFolder = await StorageFolder.GetFolderFromPathAsync("C:\\Work\\iSync");
-
-    var itemsResult = await importSession.FindItemsAsync(PhotoImportContentTypeFilter.ImagesAndVideos, PhotoImportItemSelectionMode.SelectAll);
-
-    var list = new List<ImportItemViewModel>();
-
-    foreach (var foundItem in itemsResult.FoundItems)
-    {
-      list.Add(new ImportItemViewModel(foundItem));
-    }
-
-    return list;
-  }
+  
 
   public override bool Equals(object? obj)
   {

@@ -20,7 +20,7 @@ public partial class MainWindow
 
   private void FolderPathMouseUp(object sender, MouseButtonEventArgs e)
   {
-    ((TextBox)sender).SelectAll();
+    ((TextBox)sender).Focus();
     e.Handled = true;
   }
 }
