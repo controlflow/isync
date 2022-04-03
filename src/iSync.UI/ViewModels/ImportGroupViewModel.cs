@@ -18,5 +18,9 @@ public sealed class ImportGroupViewModel : ObservableObject
 
   public string Count => Items.Count + " item(s)";
 
-  private IReadOnlyList<ImportItemViewModel> Items { get; }
+  public bool IsVisible { get; set; }
+
+  public IReadOnlyList<ImportItemViewModel> Items { get; }
+
+  public IReadOnlyList<ImportItemViewModel> Items2 => Items.Take(6).ToList();
 }

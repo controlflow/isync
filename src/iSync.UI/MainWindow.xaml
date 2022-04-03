@@ -125,24 +125,57 @@
       <ScrollViewer HorizontalScrollBarVisibility="Auto">
         <ItemsControl ItemsSource="{Binding Contents.Result}"
                       Focusable="False"
-                      AlternationCount="2">
+                      AlternationCount="1">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel IsVirtualizing="True"
+                                      VirtualizationMode="Recycling"
+                                      Focusable="False"
+                                      />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate DataType="vm:ImportGroupViewModel">
-              <Border Height="100" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+              <Border Height="100">
                 <Border.Style>
                   <Style TargetType="Border">
                     <Style.Triggers>
                       <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background"
-                                Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
+                      </Trigger>
+                      <Trigger Property="IsMouseOver" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
                       </Trigger>
                     </Style.Triggers>
                   </Style>
                 </Border.Style>
-                <StackPanel>
-                  <TextBlock Text="{Binding GroupName}" />
-                  <TextBlock Text="{Binding Size}" />
-                  <TextBlock Text="{Binding Count}" />
+                
+                <StackPanel Orientation="Horizontal">
+                  <StackPanel>
+                    <TextBlock Text="{Binding GroupName}" />
+                    <TextBlock Text="{Binding Size}" />
+                    <TextBlock Text="{Binding Count}" />
+                    <Expander>
+                      <TextBlock Text="Expanded"></TextBlock>
+                    </Expander>
+                  </StackPanel>
+                  <ItemsControl ItemsSource="{Binding Items2}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <VirtualizingStackPanel IsVirtualizing="True"
+                                                VirtualizationMode="Recycling"
+                                                Orientation="Horizontal"
+                                                Focusable="False"
+                        />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+<DataTemplate>
+  <Image Source="{Binding Thumbnail.Result, Mode=OneWay}"></Image>
+</DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
                 </StackPanel>
               </Border>
             </DataTemplate>

@@ -17,12 +17,17 @@ public sealed class MainViewModel : ObservableObject
   {
     SourceList.CurrentDevice.Advice(deviceViewModel =>
     {
-      if (deviceViewModel == null) return;
-
       ImportSession?.Dispose();
 
-      var importSession = deviceViewModel.PhotoImportSource.CreateImportSession();
-      ImportSession = new ImportSessionViewModel(importSession);
+      if (deviceViewModel == null)
+      {
+        ImportSession = null;
+      }
+      else
+      {
+        var importSession = deviceViewModel.PhotoImportSource.CreateImportSession();
+        ImportSession = new ImportSessionViewModel(importSession);
+      }
     });
   }
 }
