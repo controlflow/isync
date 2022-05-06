@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:iSync.UI.ViewModels"
         xmlns:helpers="clr-namespace:iSync.UI.Helpers"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Icon="Resources/camera.png"
         Title="Photo Sync That Just Works"
@@ -122,66 +123,106 @@
     <Grid Grid.Row="2"
           DataContext="{Binding ImportSession, Mode=OneWay}">
 
-      <ScrollViewer HorizontalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding Contents.Result}"
-                      Focusable="False"
-                      AlternationCount="1">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel IsVirtualizing="True"
-                                      VirtualizationMode="Recycling"
-                                      Focusable="False"
-                                      />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="vm:ImportGroupViewModel">
-              <Border Height="100">
-                <Border.Style>
-                  <Style TargetType="Border">
-                    <Style.Triggers>
-                      <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" />
-                      </Trigger>
-                      <Trigger Property="IsMouseOver" Value="False">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
-                      </Trigger>
-                    </Style.Triggers>
-                  </Style>
-                </Border.Style>
-                
-                <StackPanel Orientation="Horizontal">
-                  <StackPanel>
-                    <TextBlock Text="{Binding GroupName}" />
-                    <TextBlock Text="{Binding Size}" />
-                    <TextBlock Text="{Binding Count}" />
-                    <Expander>
-                      <TextBlock Text="Expanded"></TextBlock>
-                    </Expander>
-                  </StackPanel>
-                  <ItemsControl ItemsSource="{Binding Items2}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsVirtualizing="True"
-                                                VirtualizationMode="Recycling"
-                                                Orientation="Horizontal"
-                                                Focusable="False"
-                        />
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-<DataTemplate>
-  <Image Source="{Binding Thumbnail.Result, Mode=OneWay}"></Image>
-</DataTemplate>
+      <ContentControl Content="{Binding Mode=OneWay}">
+        <ContentControl.ContentTemplateSelector>
+          <helpers:TemplateByTypeSelector>
+            <helpers:TemplateByTypeSelector.TemplateForNullItem>
+              <DataTemplate>
+                <TextBlock Text="No device selected"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="Gray" />
+              </DataTemplate>
+            </helpers:TemplateByTypeSelector.TemplateForNullItem>
+            <helpers:TemplateByTypeSelector.Templates>
+              <DataTemplate DataType="{x:Type vm:ImportSessionViewModel}">
+                <ContentControl Content="{Binding Contents.Result, Mode=OneWay}">
+                  <ContentControl.ContentTemplateSelector>
+                    <helpers:TemplateByTypeSelector>
+                      <helpers:TemplateByTypeSelector.Templates>
+                        <DataTemplate DataType="{x:Type vm:LoadingViewModel}">
+                          <TextBlock Text="{Binding Message, Mode=OneWay}"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Center" />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:NothingToImportViewModel}">
+                          <TextBlock Text="Nothing to import"
+                                     FontWeight="Bold"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center" />
+                        </DataTemplate>
+                      </helpers:TemplateByTypeSelector.Templates>
+                    </helpers:TemplateByTypeSelector>
+                  </ContentControl.ContentTemplateSelector>
+                </ContentControl>
+              </DataTemplate>
 
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                </StackPanel>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </ScrollViewer>
+            </helpers:TemplateByTypeSelector.Templates>
+          </helpers:TemplateByTypeSelector>
+        </ContentControl.ContentTemplateSelector>
+      </ContentControl>
+
+
+      <!--       <ScrollViewer HorizontalScrollBarVisibility="Auto"> -->
+<!--         <ItemsControl ItemsSource="{Binding Contents.Result}" -->
+<!--                       Focusable="False" -->
+<!--                       AlternationCount="1"> -->
+<!--           <ItemsControl.ItemsPanel> -->
+<!--             <ItemsPanelTemplate> -->
+<!--               <VirtualizingStackPanel IsVirtualizing="True" -->
+<!--                                       VirtualizationMode="Recycling" -->
+<!--                                       Focusable="False" -->
+<!--                                       /> -->
+<!--             </ItemsPanelTemplate> -->
+<!--           </ItemsControl.ItemsPanel> -->
+<!--           <ItemsControl.ItemTemplate> -->
+<!--             <DataTemplate DataType="vm:ImportGroupViewModel"> -->
+<!--               <Border Height="100"> -->
+<!--                 <Border.Style> -->
+<!--                   <Style TargetType="Border"> -->
+<!--                     <Style.Triggers> -->
+<!--                       <Trigger Property="IsMouseOver" Value="True"> -->
+<!--                         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" /> -->
+<!--                       </Trigger> -->
+<!--                       <Trigger Property="IsMouseOver" Value="False"> -->
+<!--                         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/> -->
+<!--                       </Trigger> -->
+<!--                     </Style.Triggers> -->
+<!--                   </Style> -->
+<!--                 </Border.Style> -->
+<!--                  -->
+<!--                 <StackPanel Orientation="Horizontal"> -->
+<!--                   <StackPanel> -->
+<!--                     <TextBlock Text="{Binding GroupName}" /> -->
+<!--                     <TextBlock Text="{Binding Size}" /> -->
+<!--                     <TextBlock Text="{Binding Count}" /> -->
+<!--                     <Expander> -->
+<!--                       <TextBlock Text="Expanded"></TextBlock> -->
+<!--                     </Expander> -->
+<!--                   </StackPanel> -->
+<!--                   <ItemsControl ItemsSource="{Binding Items2}"> -->
+<!--                     <ItemsControl.ItemsPanel> -->
+<!--                       <ItemsPanelTemplate> -->
+<!--                         <VirtualizingStackPanel IsVirtualizing="True" -->
+<!--                                                 VirtualizationMode="Recycling" -->
+<!--                                                 Orientation="Horizontal" -->
+<!--                                                 Focusable="False" -->
+<!--                         /> -->
+<!--                       </ItemsPanelTemplate> -->
+<!--                     </ItemsControl.ItemsPanel> -->
+<!--                     <ItemsControl.ItemTemplate> -->
+<!-- <DataTemplate> -->
+<!--   <Image Source="{Binding Thumbnail.Result, Mode=OneWay}"></Image> -->
+<!-- </DataTemplate> -->
+<!-- -->
+<!--                     </ItemsControl.ItemTemplate> -->
+<!--                   </ItemsControl> -->
+<!--                 </StackPanel> -->
+<!--               </Border> -->
+<!--             </DataTemplate> -->
+<!--           </ItemsControl.ItemTemplate> -->
+<!--         </ItemsControl> -->
+<!--       </ScrollViewer> -->
 
       <!--<ListView ItemsSource="{Binding Contents}"
                 Margin="4">

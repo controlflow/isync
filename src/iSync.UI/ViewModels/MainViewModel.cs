@@ -32,3 +32,8 @@ public sealed class MainViewModel : ObservableObject
   }
 }
 
+class Foo
+{
+
+}
+

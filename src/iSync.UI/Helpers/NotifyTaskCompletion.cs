@@ -21,7 +21,9 @@ public sealed class NotifyTaskCompletion<T> : ObservableObject
   }
 
   public T? NotCompletedValue { get; init; }
+
   public T? FailedValue { get; init; }
+  public Func<Exception, T?>? FailedValueFactory { get; init; }
 
   public Exception? Exception => _task.Exception;
 
@@ -33,7 +35,14 @@ public sealed class NotifyTaskCompletion<T> : ObservableObject
         return _task.Result;
 
       if (_task.IsFaulted || _task.IsCanceled)
+      {
+        if (FailedValueFactory != null)
+        {
+          return FailedValueFactory(_task.Exception!);
+        }
+
         return FailedValue;
+      }
 
       return NotCompletedValue;
     }

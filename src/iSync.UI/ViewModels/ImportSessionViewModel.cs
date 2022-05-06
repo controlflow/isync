@@ -8,16 +8,16 @@ namespace iSync.UI.ViewModels;
 public sealed class ImportSessionViewModel : ObservableObject, IDisposable
 {
   private readonly PhotoImportSession _importSession;
+  private readonly LoadingViewModel _loadingViewModel = new();
 
   public ImportSessionViewModel(PhotoImportSession importSession)
   {
     _importSession = importSession;
-    //Contents = new List<string>() { "aaa", "bbb", "ccc" };
   }
 
   public NotifyTaskCompletion<object> Contents => new(LoadContents())
   {
-    NotCompletedValue = "Loading...",
+    NotCompletedValue = _loadingViewModel,
     FailedValue = "Failed"
   };
 
@@ -42,7 +42,12 @@ public sealed class ImportSessionViewModel : ObservableObject, IDisposable
       groupsList.Add(new ImportGroupViewModel(importGroup.Key, itemList));
     }
 
-    return groupsList;
+    if (groupsList.Count == 0)
+    {
+      return new NothingToImportViewModel();
+    }
+
+    return null;
   }
 
   private string GetImportItemDirectory(PhotoImportItem importItem)
@@ -68,5 +73,6 @@ public sealed class ImportSessionViewModel : ObservableObject, IDisposable
   public void Dispose()
   {
     _importSession.Dispose();
+    _loadingViewModel.Dispose();
   }
 }
